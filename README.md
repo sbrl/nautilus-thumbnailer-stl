@@ -4,6 +4,8 @@
 
 This is a small script to use OpenSCAD to render STL model files to PNG images for the purpose of nautilus thumbnailing, though it can be used standalone too.
 
+![Screenshot of Nautilus with stl2png in action.](./screenshot.png)
+
 
 ## System Requirements
  - OpenSCAD: <https://openscad.org>
