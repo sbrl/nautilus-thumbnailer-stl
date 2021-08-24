@@ -6,6 +6,7 @@ This is a small script to use OpenSCAD to render STL model files to PNG images f
 
 ![Screenshot of Nautilus with stl2png in action.](./screenshot.png)
 
+_(Above: stl2png in action as a nautilus thumbnailer. STL credit: [Entitled Goose from the Untitled Goose Game](https://www.thingiverse.com/thing:3906053))
 
 ## System Requirements
  - OpenSCAD: <https://openscad.org>
