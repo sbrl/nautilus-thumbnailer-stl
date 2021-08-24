@@ -96,6 +96,7 @@ Ref [openscad/openscad#3386](https://github.com/openscad/openscad/issues/3368)
 
 
 ## Sources and further reading
+ - [Converting STL files to PNG with OpenSCAD](https://3dprinting.stackexchange.com/a/6047/30537)
  - [OpenSCAD crashes when trying to render STL file on headless system](https://github.com/openscad/openscad/issues/3368)
  - [Oxipng](https://github.com/shssoichiro/oxipng)
  - [Bash yes/no prompt](https://stackoverflow.com/a/29436423/1460422)
