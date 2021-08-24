@@ -2,7 +2,7 @@
 <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
 	<mime-type type="model/stl">
 		<comment>STL Model</comment>
-		<!-- <generic-icon name="image-x-generic"/> -->
-		<glob pattern="*.stl"/>
+		<generic-icon name="text-x-preview" />
+		<glob pattern="*.stl" />
 	</mime-type>
 </mime-info>

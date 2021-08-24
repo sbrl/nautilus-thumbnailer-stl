@@ -16,6 +16,6 @@ do_uninstall /usr/share/mime/packages/stl2png.xml;
 
 echo ">>> Updating shared MIME-Info database cache";
 
-sudo update-mime-database /usr/share/mime/packages
+sudo update-mime-database /usr/share/mime
 
 echo ">>> Uninstall complete";

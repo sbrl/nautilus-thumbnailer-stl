@@ -1,4 +1,4 @@
 [Thumbnailer Entry]
 TryExec=/usr/local/bin/stl2png
 Exec=/usr/local/bin/stl2png %i %o %s
-MimeType=image/mrc
+MimeType=model/stl

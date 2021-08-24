@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
+set +e;
 
 infile="${1}";
 outfile="${2}";
 imagesize="${3}";
 
 if [[ -z "${imagesize}" ]]; then imagesize="100"; fi
+if [[ ! -r "${infile}" ]]; then
+	echo "Error: Input STL file at '${infile}' doesn't appear to exist" >&2;
+	exit 2;
+fi
 
 if [[ -z "${outfile}" ]]; then
 	echo "std2png.sh - Convert STL files to PNG images
@@ -22,7 +27,10 @@ Usage:
 
 Requirements:
 	OpenSCAD <https://openscad.org/> must be installed
-	Optionally, if Oxipng <https://github.com/shssoichiro/oxipng> output images are optimised.
+	xvfb (X Virtual FrameBuffer): sudo apt instll xvfb
+	Optionally, if oxipng <https://github.com/shssoichiro/oxipng> output images are optimised
+	If oxipng is not installed but optipng is, then optipng will be used for PNG optimisation instead (slower, since optipng is not multithreaded)
+	If neither oxipng nor optipng are installed, then output images are not optimised (optimisation is recommended, as 70%+ file size reduction is typically obtained - thereby reducing thumbnail cache size)
 
 Examples:
 
@@ -34,12 +42,14 @@ fi
 
 temp_dir="$(mktemp --tmpdir -d "stl2png-XXXXXXX")";
 
-on_exit() {
-	rm -rf "${temp_dir}";
-}
-trap on_exit EXIT;
-
-
+if [[ -z "${DEBUG_STL2PNG}" ]]; then 
+	on_exit() {
+		rm -rf "${temp_dir}";
+	}
+	trap on_exit EXIT;
+else
+	logger --tag "stl2png" --stderr "stl2png: Debug mode enabled; not deleting temporary directory at '${temp_dir}'";
+fi
 
 command_exists() {
 	which $1 >/dev/null 2>&1;
@@ -47,16 +57,30 @@ command_exists() {
 }
 
 if ! command_exists openscad; then
-	logger --tag "stl2png" --stderr 'stl2png: OpenSCAD does not appear to be installed or is in your PATH. Please install it and then run "rm -rf ~/.cache/thumbnails/*" (without quotes)';
+	logger --tag "stl2png" --stderr 'stl2png: OpenSCAD does not appear to be installed or is not in your PATH. Please install it and then run "rm -rf ~/.cache/thumbnails/*" (without quotes)';
+	exit 2;
+fi
+if ! command_exists xvfb-run; then
+	logger --tag "stl2png" --stderr 'stl2png: xvfb does not appear to be installed or is in your PATH. Please install it (e.g. sudo apt install xvfb) and then run "rm -rf ~/.cache/thumbnails/*" (without quotes)';
+	exit 3;
+fi
+
+cp "${infile}" "${temp_dir}/source.stl";
+
+echo "import(\"source.stl\", convexity=10);" >"${temp_dir}/thumbnail.scad";
+
+# We need to use xvfb here, because otherwise OpenSCAD crashes when used with the nautilus thumbnailer as it claims it can't open the display.
+xvfb-run --auto-servernum openscad --imgsize "${imagesize},${imagesize}" -o "${outfile}" "${temp_dir}/thumbnail.scad" >"${temp_dir}/output.log" 2>&1;
+exit_code="${?}";
+
+if [[ "${exit_code}" -ne 0 ]]; then
+	logger --tag "stl2png" --stderr "stl2png: OpenSCAD crashed wutgh message:\n$(cat "${temp_dir}/output.log")";
+	cp "${temp_dir}" "/tmp/stl2png-openscad-last-run.log";
 	exit 1;
 fi
 
-ln -s "${infile}" "${temp_dir}/target.stl"
-
-echo "import(\"${temp_dir}/target.stl\", convexity=10);" >"${temp_dir}/thumbnail.scad";
-
-openscad --imgsize "${imagesize},${imagesize}" -o "${outfile}";
-
 if command_exists oxipng; then
 	oxipng -s "${outfile}";
+elif command_exists optipng; then
+	optipng -strip all "${outfile}";
 fi
