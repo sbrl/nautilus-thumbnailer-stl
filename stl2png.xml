@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+	<mime-type type="model/stl">
+		<comment>STL Model</comment>
+		<!-- <generic-icon name="image-x-generic"/> -->
+		<glob pattern="*.stl"/>
+	</mime-type>
+</mime-info>
